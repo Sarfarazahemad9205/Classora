@@ -28,6 +28,10 @@ const materialSchema = new mongoose.Schema(
       type: String,
     },
 
+    cloudinaryPublicId: {
+      type: String,
+    },
+
     videoUrl: {
       type: String,
     },

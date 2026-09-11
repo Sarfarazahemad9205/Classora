@@ -1,9 +1,62 @@
-
 import { Material } from "../models/material.js";
 import { Chapter } from "../models/chapter.js";
 import Trycatch from "../middlewares/tryCatch.js";
-import { unlink } from "fs/promises";
+import { Readable } from "stream";
+import cloudinary from "../config/cloudinary.js";
 
+// Upload PDF to Cloudinary
+const uploadPdfToCloudinary = (fileBuffer, originalName) => {
+  return new Promise((resolve, reject) => {
+    const publicId = `classora/pdfs/${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}`;
+
+    console.log("Starting Cloudinary PDF upload...");
+    console.log("Original file:", originalName);
+
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: "image",
+        format: "pdf",
+        public_id: publicId,
+      },
+      (error, result) => {
+        if (error) {
+          console.error("========== CLOUDINARY ERROR ==========");
+          console.error("Message:", error.message);
+          console.error("HTTP Code:", error.http_code);
+          console.error("Name:", error.name);
+          console.error("Full Error:", error);
+          console.error("======================================");
+
+          reject(error);
+        } else {
+          console.log("========== CLOUDINARY SUCCESS ==========");
+          console.log("URL:", result.secure_url);
+          console.log("Public ID:", result.public_id);
+          console.log("========================================");
+
+          resolve(result);
+        }
+      }
+    );
+
+    Readable.from([fileBuffer]).pipe(uploadStream);
+  });
+};
+
+// Delete PDF from Cloudinary
+const deletePdfFromCloudinary = async (publicId) => {
+  if (!publicId) {
+    return;
+  }
+
+  console.log("Deleting PDF from Cloudinary:", publicId);
+
+  await cloudinary.uploader.destroy(publicId, {
+    resource_type: "image",
+  });
+};
 
 // CREATE MATERIAL
 export const createMaterial = Trycatch(async (req, res) => {
@@ -32,7 +85,6 @@ export const createMaterial = Trycatch(async (req, res) => {
     });
   }
 
-
   // NOTES
   if (type === "notes") {
     if (!content) {
@@ -55,7 +107,6 @@ export const createMaterial = Trycatch(async (req, res) => {
     });
   }
 
-
   // PDF
   if (type === "pdf") {
     if (!req.file) {
@@ -64,11 +115,22 @@ export const createMaterial = Trycatch(async (req, res) => {
       });
     }
 
+    console.log("PDF received by backend.");
+    console.log("File name:", req.file.originalname);
+    console.log("File size:", req.file.size);
+    console.log("File type:", req.file.mimetype);
+
+    const result = await uploadPdfToCloudinary(
+      req.file.buffer,
+      req.file.originalname
+    );
+
     const material = await Material.create({
       title,
       type,
       description,
-      fileUrl: `/uploads/${req.file.filename}`,
+      fileUrl: result.secure_url,
+      cloudinaryPublicId: result.public_id,
       chapter,
     });
 
@@ -77,7 +139,6 @@ export const createMaterial = Trycatch(async (req, res) => {
       material,
     });
   }
-
 
   // VIDEO
   if (type === "video") {
@@ -111,13 +172,11 @@ export const createMaterial = Trycatch(async (req, res) => {
     });
   }
 
-
   // Invalid type
   return res.status(400).json({
     message: "Invalid material type",
   });
 });
-
 
 // GET ALL MATERIALS
 export const getMaterials = Trycatch(async (req, res) => {
@@ -127,7 +186,6 @@ export const getMaterials = Trycatch(async (req, res) => {
     materials,
   });
 });
-
 
 // GET MATERIAL BY ID
 export const getMaterialById = Trycatch(async (req, res) => {
@@ -145,7 +203,6 @@ export const getMaterialById = Trycatch(async (req, res) => {
     material,
   });
 });
-
 
 // UPDATE MATERIAL
 export const updateMaterial = Trycatch(async (req, res) => {
@@ -168,7 +225,6 @@ export const updateMaterial = Trycatch(async (req, res) => {
     });
   }
 
-
   // Check chapter if provided
   if (chapter) {
     const existingChapter = await Chapter.findById(chapter);
@@ -182,7 +238,6 @@ export const updateMaterial = Trycatch(async (req, res) => {
     material.chapter = chapter;
   }
 
-
   // UPDATE NOTES
   if (type === "notes") {
     if (!content) {
@@ -191,22 +246,17 @@ export const updateMaterial = Trycatch(async (req, res) => {
       });
     }
 
-    // If old material was PDF, delete old PDF
-    if (material.fileUrl) {
-      const oldFilePath = material.fileUrl.replace(
-        "/uploads/",
-        "uploads/"
-      );
-
-      await unlink(oldFilePath).catch(() => {});
+    // Delete old PDF from Cloudinary
+    if (material.cloudinaryPublicId) {
+      await deletePdfFromCloudinary(material.cloudinaryPublicId);
     }
 
     material.type = "notes";
     material.content = content;
     material.fileUrl = undefined;
+    material.cloudinaryPublicId = undefined;
     material.videoUrl = undefined;
   }
-
 
   // UPDATE PDF
   if (type === "pdf") {
@@ -217,24 +267,25 @@ export const updateMaterial = Trycatch(async (req, res) => {
     }
 
     if (req.file) {
-      // Delete old PDF
-      if (material.fileUrl) {
-        const oldFilePath = material.fileUrl.replace(
-          "/uploads/",
-          "uploads/"
-        );
-
-        await unlink(oldFilePath).catch(() => {});
+      // Delete old PDF from Cloudinary
+      if (material.cloudinaryPublicId) {
+        await deletePdfFromCloudinary(material.cloudinaryPublicId);
       }
 
-      material.fileUrl = `/uploads/${req.file.filename}`;
+      // Upload new PDF
+      const result = await uploadPdfToCloudinary(
+        req.file.buffer,
+        req.file.originalname
+      );
+
+      material.fileUrl = result.secure_url;
+      material.cloudinaryPublicId = result.public_id;
     }
 
     material.type = "pdf";
     material.content = undefined;
     material.videoUrl = undefined;
   }
-
 
   // UPDATE VIDEO
   if (type === "video") {
@@ -253,22 +304,17 @@ export const updateMaterial = Trycatch(async (req, res) => {
       });
     }
 
-    // Delete old PDF if changing from PDF to video
-    if (material.fileUrl) {
-      const oldFilePath = material.fileUrl.replace(
-        "/uploads/",
-        "uploads/"
-      );
-
-      await unlink(oldFilePath).catch(() => {});
+    // Delete old PDF from Cloudinary
+    if (material.cloudinaryPublicId) {
+      await deletePdfFromCloudinary(material.cloudinaryPublicId);
     }
 
     material.type = "video";
     material.videoUrl = videoUrl;
     material.fileUrl = undefined;
+    material.cloudinaryPublicId = undefined;
     material.content = undefined;
   }
-
 
   // Update common fields
   material.title = title || material.title;
@@ -282,7 +328,6 @@ export const updateMaterial = Trycatch(async (req, res) => {
   });
 });
 
-
 // DELETE MATERIAL
 export const deleteMaterial = Trycatch(async (req, res) => {
   const { id } = req.params;
@@ -295,15 +340,9 @@ export const deleteMaterial = Trycatch(async (req, res) => {
     });
   }
 
-  // Delete PDF file from server
-  // Only PDFs have fileUrl
-  if (material.fileUrl) {
-    const filePath = material.fileUrl.replace(
-      "/uploads/",
-      "uploads/"
-    );
-
-    await unlink(filePath).catch(() => {});
+  // Delete PDF from Cloudinary
+  if (material.cloudinaryPublicId) {
+    await deletePdfFromCloudinary(material.cloudinaryPublicId);
   }
 
   await Material.findByIdAndDelete(id);
@@ -312,4 +351,3 @@ export const deleteMaterial = Trycatch(async (req, res) => {
     message: "Material deleted successfully",
   });
 });
-
