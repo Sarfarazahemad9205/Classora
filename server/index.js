@@ -8,32 +8,32 @@ import materialRoutes from "./routes/material.js";
 import statsRoutes from "./routes/stats.js";
 import cors from "cors";
 
-
 dotenv.config();
 
-const app=express()
-//using middleware
+const app = express();
+
+// Middleware
 app.use(express.json());
+
 app.use(cors({
     origin: "http://localhost:5173"
 }));
 
-
 app.use("/uploads", express.static("uploads"));
 
-const port=process.env.PORT;
+const port = process.env.PORT || 5000;
 
-app.get('/',(req,res)=>{
+app.get("/", (req, res) => {
     res.send("server is working");
-})
+});
 
-app.use('/api',userRoutes);
+app.use("/api", userRoutes);
 app.use("/api/subjects", subjectRoutes);
 app.use("/api", chapterRoutes);
 app.use("/api/material", materialRoutes);
 app.use("/api/stats", statsRoutes);
 
-app.listen(5000,()=>{
+app.listen(port, "0.0.0.0", () => {
     console.log(`Server is running on ${port}`);
     connectDb();
-})
+});

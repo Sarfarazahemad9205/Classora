@@ -40,6 +40,13 @@ function Admin() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  // ================= EXISTING MATERIALS =================
+  const [materials, setMaterials] = useState([]);
+  const [materialsLoading, setMaterialsLoading] = useState(false);
+  const [deletingMaterialId, setDeletingMaterialId] = useState(null);
+  const [materialDeleteMessage, setMaterialDeleteMessage] = useState("");
+  const [materialDeleteError, setMaterialDeleteError] = useState("");
+
   // =========================================================
   // FETCH SUBJECTS & CHAPTERS
   // =========================================================
@@ -127,6 +134,44 @@ function Admin() {
 
     if (token && user?.role === "admin") {
       fetchVisits();
+    }
+  }, [token, user]);
+
+  // =========================================================
+  // FETCH EXISTING MATERIALS
+  // =========================================================
+
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        setMaterialsLoading(true);
+        setMaterialDeleteError("");
+
+        const response = await fetch("/api/material", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || "Failed to fetch materials"
+          );
+        }
+
+        setMaterials(data.materials || []);
+      } catch (err) {
+        console.error("Fetch materials error:", err);
+        setMaterialDeleteError(err.message);
+      } finally {
+        setMaterialsLoading(false);
+      }
+    };
+
+    if (token && user?.role === "admin") {
+      fetchMaterials();
     }
   }, [token, user]);
 
@@ -398,11 +443,84 @@ function Admin() {
       if (fileInput) {
         fileInput.value = "";
       }
+
+      // Refresh the existing materials list after adding a new material
+      try {
+        const materialsResponse = await fetch("/api/material", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const materialsData = await materialsResponse.json();
+
+        if (materialsResponse.ok) {
+          setMaterials(materialsData.materials || []);
+        }
+      } catch (refreshError) {
+        console.error(
+          "Refresh materials error:",
+          refreshError
+        );
+      }
     } catch (err) {
       console.error("Add material error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // =========================================================
+  // DELETE MATERIAL
+  // =========================================================
+
+  const handleDeleteMaterial = async (materialId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this material?"
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    setMaterialDeleteMessage("");
+    setMaterialDeleteError("");
+    setDeletingMaterialId(materialId);
+
+    try {
+      const response = await fetch(
+        `/api/material/${materialId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to delete material"
+        );
+      }
+
+      setMaterials((prevMaterials) =>
+        prevMaterials.filter(
+          (material) => material._id !== materialId
+        )
+      );
+
+      setMaterialDeleteMessage(
+        data.message || "Material deleted successfully."
+      );
+    } catch (err) {
+      console.error("Delete material error:", err);
+      setMaterialDeleteError(err.message);
+    } finally {
+      setDeletingMaterialId(null);
     }
   };
 
@@ -994,6 +1112,138 @@ function Admin() {
                     </button>
 
                   </form>
+
+                </div>
+
+              </div>
+
+              {/* =================================================
+                  EXISTING MATERIALS - DELETE MATERIAL
+              ================================================== */}
+
+              <div className="card border-0 shadow-sm rounded-4 mt-5">
+
+                <div className="card-body p-4 p-md-5">
+
+                  <div className="text-center mb-4">
+
+                    <span className="text-danger fw-bold">
+                      MATERIAL MANAGEMENT
+                    </span>
+
+                    <h2 className="fw-bold mt-2">
+                      Existing Materials
+                    </h2>
+
+                    <p className="text-secondary">
+                      View and delete learning materials already added.
+                    </p>
+
+                  </div>
+
+                  {materialDeleteMessage && (
+                    <div className="alert alert-success">
+                      {materialDeleteMessage}
+                    </div>
+                  )}
+
+                  {materialDeleteError && (
+                    <div className="alert alert-danger">
+                      {materialDeleteError}
+                    </div>
+                  )}
+
+                  {materialsLoading ? (
+                    <div className="text-center py-4">
+
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="visually-hidden">
+                          Loading...
+                        </span>
+                      </div>
+
+                      <p className="text-secondary mt-2 mb-0">
+                        Loading materials...
+                      </p>
+
+                    </div>
+                  ) : materials.length === 0 ? (
+                    <div className="alert alert-secondary text-center mb-0">
+                      No materials have been added yet.
+                    </div>
+                  ) : (
+                    <div className="list-group">
+
+                      {materials.map((material) => {
+
+                        const chapterName =
+                          material.chapter?.name ||
+                          "Unknown Chapter";
+
+                        return (
+                          <div
+                            key={material._id}
+                            className="list-group-item"
+                          >
+
+                            <div className="d-flex justify-content-between align-items-center gap-3">
+
+                              <div className="flex-grow-1">
+
+                                <h5 className="fw-bold mb-1">
+                                  {material.title}
+                                </h5>
+
+                                <div className="mb-2">
+
+                                  <span className="badge bg-primary me-2">
+                                    {material.type?.toUpperCase()}
+                                  </span>
+
+                                  <span className="text-secondary">
+                                    Chapter: {chapterName}
+                                  </span>
+
+                                </div>
+
+                                {material.description && (
+                                  <p className="text-secondary mb-0">
+                                    {material.description}
+                                  </p>
+                                )}
+
+                              </div>
+
+                              <button
+                                type="button"
+                                className="btn btn-danger btn-sm"
+                                onClick={() =>
+                                  handleDeleteMaterial(
+                                    material._id
+                                  )
+                                }
+                                disabled={
+                                  deletingMaterialId ===
+                                  material._id
+                                }
+                              >
+                                {deletingMaterialId ===
+                                material._id
+                                  ? "Deleting..."
+                                  : "Delete"}
+                              </button>
+
+                            </div>
+
+                          </div>
+                        );
+                      })}
+
+                    </div>
+                  )}
 
                 </div>
 
