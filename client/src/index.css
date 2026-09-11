@@ -1,0 +1,774 @@
+@import "tailwindcss";
+
+/* ========================================
+   GLOBAL STYLES
+======================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  background-color: #f1f5f9;
+  color: #222;
+
+  overflow-x: hidden;
+}
+
+
+/* ========================================
+   NAVBAR
+======================================== */
+
+.custom-navbar {
+  margin: 15px 20px;
+  padding: 10px 15px;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+
+  transition: all 0.3s ease;
+}
+
+
+/* Navbar Brand */
+
+.custom-navbar .navbar-brand {
+  color: #1e3a8a;
+
+  font-size: 24px;
+  font-weight: 700;
+
+  transition: color 0.3s ease;
+}
+
+.custom-navbar .navbar-brand:hover {
+  color: #2563eb;
+}
+
+
+/* Navbar Links */
+
+.custom-navbar .nav-link {
+  color: #374151;
+
+  padding: 8px 15px;
+  margin: 0 3px;
+
+  border-radius: 10px;
+
+  transition: all 0.3s ease;
+}
+
+
+/* Navbar Link Hover */
+
+.custom-navbar .nav-link:hover {
+  color: #1d4ed8;
+
+  background-color: #eff6ff;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ========================================
+   CAROUSEL CONTAINER
+======================================== */
+
+.carousel-container {
+  margin: 25px 20px;
+}
+
+
+/* ========================================
+   MAIN CAROUSEL
+======================================== */
+
+.carousel {
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+
+/* ========================================
+   CAROUSEL SLIDE
+======================================== */
+
+.carousel-slide {
+  height: 400px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  text-align: center;
+
+  color: white;
+
+  padding: 30px;
+
+  background-size: cover;
+
+  background-position: center;
+
+  background-repeat: no-repeat;
+
+  position: relative;
+}
+
+
+/* ========================================
+   CAROUSEL OVERLAY
+======================================== */
+
+.carousel-overlay {
+  padding: 30px 50px;
+
+  max-width: 80%;
+
+  text-align: center;
+
+  background-color: rgba(0, 0, 0, 0.50);
+
+  border-radius: 15px;
+
+  backdrop-filter: blur(2px);
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Overlay Heading */
+
+.carousel-overlay h2 {
+  margin-bottom: 15px;
+
+  font-size: 42px;
+
+  font-weight: 700;
+}
+
+
+/* Overlay Paragraph */
+
+.carousel-overlay p {
+  margin: 0;
+
+  font-size: 20px;
+}
+
+
+/* ========================================
+   CAROUSEL NAVIGATION BUTTONS
+======================================== */
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 50px;
+  height: 50px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border-radius: 50%;
+
+  background-color: rgba(0, 0, 0, 0.35);
+
+  border: 2px solid rgba(255, 255, 255, 0.7);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  opacity: 1;
+
+  transition: all 0.3s ease;
+}
+
+
+/* Previous Button */
+
+.carousel-control-prev {
+  left: 20px;
+}
+
+
+/* Next Button */
+
+.carousel-control-next {
+  right: 20px;
+}
+
+
+/* Navigation Hover */
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background-color: rgba(0, 0, 0, 0.65);
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+
+  transform: translateY(-50%) scale(1.08);
+}
+
+
+/* Navigation Icons */
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 22px;
+  height: 22px;
+}
+
+
+/* ========================================
+   TABLET
+   768px - 991px
+======================================== */
+
+@media (max-width: 991px) {
+
+  /* Navbar */
+
+  .custom-navbar {
+    margin: 12px 15px;
+  }
+
+  .custom-navbar .navbar-brand {
+    font-size: 22px;
+  }
+
+
+  /* Carousel */
+
+  .carousel-container {
+    margin: 20px 15px;
+  }
+
+  .carousel-slide {
+    height: 350px;
+
+    padding: 25px;
+  }
+
+
+  /* Overlay */
+
+  .carousel-overlay {
+    padding: 25px 40px;
+
+    max-width: 80%;
+  }
+
+  .carousel-overlay h2 {
+    font-size: 34px;
+  }
+
+  .carousel-overlay p {
+    font-size: 18px;
+  }
+
+
+  /* Navigation */
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 45px;
+    height: 45px;
+  }
+
+  .carousel-control-prev {
+    left: 15px;
+  }
+
+  .carousel-control-next {
+    right: 15px;
+  }
+
+}
+
+
+/* ========================================
+   MOBILE
+   Below 768px
+======================================== */
+
+@media (max-width: 767px) {
+
+  /* Navbar */
+
+  .custom-navbar {
+    margin: 10px;
+
+    padding: 10px;
+
+    border-radius: 12px;
+  }
+
+  .custom-navbar .navbar-brand {
+    font-size: 20px;
+  }
+
+  .custom-navbar .nav-link {
+    padding: 8px 12px;
+
+    margin: 2px 0;
+  }
+
+
+  /* Carousel */
+
+  .carousel-container {
+    margin: 15px 10px;
+  }
+
+  .carousel {
+    border-radius: 15px;
+  }
+
+  .carousel-slide {
+    height: 300px;
+
+    padding: 20px;
+
+    background-position: center;
+  }
+
+
+  /* Overlay */
+
+  .carousel-overlay {
+    padding: 20px 25px;
+
+    max-width: 85%;
+
+    border-radius: 12px;
+  }
+
+  .carousel-overlay h2 {
+    font-size: 28px;
+
+    margin-bottom: 8px;
+  }
+
+  .carousel-overlay p {
+    font-size: 16px;
+  }
+
+
+  /* Navigation */
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-control-prev {
+    left: 10px;
+  }
+
+  .carousel-control-next {
+    right: 10px;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 17px;
+    height: 17px;
+  }
+
+}
+
+
+/* ========================================
+   SMALL MOBILE
+   Below 576px
+======================================== */
+
+@media (max-width: 575px) {
+
+  /* Navbar */
+
+  .custom-navbar {
+    margin: 8px;
+
+    padding: 8px;
+
+    border-radius: 10px;
+  }
+
+  .custom-navbar .navbar-brand {
+    font-size: 18px;
+  }
+
+  .custom-navbar .nav-link {
+    padding: 7px 10px;
+
+    font-size: 14px;
+  }
+
+
+  /* Carousel */
+
+  .carousel-container {
+    margin: 10px 8px;
+  }
+
+  .carousel {
+    border-radius: 12px;
+  }
+
+  .carousel-slide {
+    height: 250px;
+
+    padding: 15px;
+
+    background-position: center;
+  }
+
+
+  /* Overlay */
+
+  .carousel-overlay {
+    padding: 15px 20px;
+
+    max-width: 80%;
+
+    border-radius: 10px;
+  }
+
+  .carousel-overlay h2 {
+    font-size: 22px;
+
+    margin-bottom: 7px;
+  }
+
+  .carousel-overlay p {
+    font-size: 14px;
+  }
+
+
+  /* Navigation */
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 35px;
+    height: 35px;
+  }
+
+  .carousel-control-prev {
+    left: 8px;
+  }
+
+  .carousel-control-next {
+    right: 8px;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+}
+
+/* Footer */
+.footer {
+  background: #0b2d5c;
+  color: white;
+  margin-top: 0;
+}
+
+/* Brand */
+.footer-brand {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 15px;
+  color: white;
+}
+
+/* Description */
+.footer-description {
+  max-width: 350px;
+  color: #cbd8ea;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+/* Footer headings */
+.footer-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: white;
+}
+
+/* Links */
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  color: #cbd8ea;
+  text-decoration: none;
+  font-size: 15px;
+  transition: all 0.25s ease;
+}
+
+.footer-links a:hover {
+  color: white;
+  padding-left: 4px;
+}
+
+/* Bottom section */
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.footer-bottom p {
+  margin: 0;
+  color: #aebfd6;
+  font-size: 14px;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+/* ========================================
+   NAVBAR
+======================================== */
+
+.custom-navbar {
+  margin: 16px 24px;
+  padding: 10px 0;
+
+  background-color: #0d6efd !important;
+
+  border-radius: 16px;
+
+  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.20);
+}
+
+
+/* ========================================
+   NAVBAR BRAND
+======================================== */
+
+.navbar-brand-custom {
+  color: #ffffff !important;
+
+  font-size: 23px !important;
+  font-weight: 800 !important;
+
+  letter-spacing: -0.4px;
+
+  transition: opacity 0.25s ease;
+}
+
+.navbar-brand-custom:hover {
+  opacity: 0.85;
+}
+
+
+/* ========================================
+   NAVBAR LINKS
+======================================== */
+
+.navbar-links {
+  gap: 6px;
+}
+
+.navbar-link {
+  color: rgba(255, 255, 255, 0.90) !important;
+
+  font-size: 16px !important;
+  font-weight: 600 !important;
+
+  padding: 8px 15px !important;
+
+  border-radius: 8px;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+
+/* Hover
+   Transparent dark overlay
+*/
+
+.navbar-link:hover {
+  color: #ffffff !important;
+
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+
+/* Active */
+
+.navbar-link.active {
+  color: #ffffff !important;
+
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+
+/* ========================================
+   LOGIN BUTTON
+======================================== */
+
+.login-button {
+  color: #0d6efd !important;
+
+  background-color: #ffffff !important;
+
+  font-size: 16px !important;
+  font-weight: 700 !important;
+
+  padding: 8px 20px !important;
+
+  margin-left: 15px;
+
+  border-radius: 9px;
+
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+
+/* Login Hover */
+
+.login-button:hover {
+  color: #0b5ed7 !important;
+
+  background-color: #e8f1ff !important;
+
+  transform: translateY(-1px);
+}
+
+
+/* ========================================
+   MOBILE NAVBAR
+======================================== */
+
+@media (max-width: 991px) {
+
+  .custom-navbar {
+    margin: 12px 15px;
+  }
+
+  .navbar-links {
+    margin-top: 15px !important;
+    margin-bottom: 10px;
+  }
+
+  .navbar-link {
+    text-align: center;
+  }
+
+  .login-button {
+    margin-left: 0;
+    text-align: center;
+  }
+}
+
+
+@media (max-width: 575px) {
+
+  .custom-navbar {
+    margin: 8px;
+    padding: 8px;
+
+    border-radius: 12px;
+  }
+
+  .navbar-brand-custom {
+    font-size: 20px !important;
+  }
+
+  .navbar-link {
+    font-size: 15px !important;
+    padding: 8px 12px !important;
+  }
+
+  .login-button {
+    font-size: 15px !important;
+    padding: 7px 16px !important;
+  }
+}
+
+/* ========================================
+   SMOOTH SCROLLING
+======================================== */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 30px;
+}
+
+
+/* ========================================
+   CUSTOM SCROLLBAR
+======================================== */
+
+/* Scrollbar width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Scrollbar track */
+::-webkit-scrollbar-track {
+  background: #e8eef7;
+}
+
+/* Scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: #0d6efd;
+  border-radius: 10px;
+  border: 2px solid #e8eef7;
+}
+
+/* Scrollbar thumb hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #0b5ed7;
+}

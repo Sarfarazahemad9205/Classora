@@ -1,0 +1,90 @@
+.verify-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f4f7fb;
+  padding: 20px;
+}
+
+.verify-card {
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  padding: 50px 45px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.verify-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #eaf2ff;
+  border-radius: 18px;
+  font-size: 32px;
+}
+
+.verify-card h1 {
+  margin-bottom: 10px;
+  font-size: 32px;
+  color: #182230;
+}
+
+.verify-card p {
+  color: #68758a;
+}
+
+.verify-email {
+  color: #1268f3 !important;
+  font-weight: 600;
+}
+
+.verify-form-group {
+  text-align: left;
+  margin: 30px 0 25px;
+}
+
+.verify-form-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #293548;
+}
+
+.verify-form-group input {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #d5dce7;
+  border-radius: 10px;
+  font-size: 20px;
+  text-align: center;
+  letter-spacing: 8px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.verify-form-group input:focus {
+  border-color: #1268f3;
+}
+
+.verify-button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #1268f3;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.verify-note {
+  margin-top: 20px;
+  font-size: 14px;
+}
