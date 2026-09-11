@@ -69,6 +69,58 @@ function SubjectManagement({ token, subjects, setSubjects }) {
     }
   };
 
+  // DELETE SUBJECT
+  const handleDeleteSubject = async (subjectId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this subject?"
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    setMessage("");
+    setError("");
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        `/api/subjects/${subjectId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to delete subject"
+        );
+      }
+
+      setMessage(
+        data.message || "Subject deleted successfully."
+      );
+
+      // Remove deleted subject from the list
+      setSubjects((prevSubjects) =>
+        prevSubjects.filter(
+          (subject) => subject._id !== subjectId
+        )
+      );
+    } catch (err) {
+      console.error("Delete subject error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="card border-0 shadow-sm rounded-4 mb-5">
 
@@ -179,16 +231,29 @@ function SubjectManagement({ token, subjects, setSubjects }) {
               {subjects.map((subject) => (
                 <div
                   key={subject._id}
-                  className="list-group-item"
+                  className="list-group-item d-flex justify-content-between align-items-center"
                 >
 
-                  <h6 className="fw-bold mb-1">
-                    {subject.name}
-                  </h6>
+                  <div>
+                    <h6 className="fw-bold mb-1">
+                      {subject.name}
+                    </h6>
 
-                  <p className="mb-0 text-secondary">
-                    {subject.description}
-                  </p>
+                    <p className="mb-0 text-secondary">
+                      {subject.description}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm ms-3"
+                    onClick={() =>
+                      handleDeleteSubject(subject._id)
+                    }
+                    disabled={loading}
+                  >
+                    Delete
+                  </button>
 
                 </div>
               ))}

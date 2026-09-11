@@ -17,7 +17,7 @@ function AppNavbar() {
           to="/"
           className="navbar-brand-custom"
         >
-          E-Learning
+         Classora
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="main-navbar" />

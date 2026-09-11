@@ -35,7 +35,7 @@ function WhyLearning() {
           </p>
 
           <h2 className="fw-bold display-6">
-            Why Choose E-Learning?
+            Why Choose Classora?
           </h2>
 
           <p className="text-muted mx-auto mt-3" style={{ maxWidth: "650px" }}>

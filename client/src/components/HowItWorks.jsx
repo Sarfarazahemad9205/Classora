@@ -9,7 +9,7 @@ function HowItWorks() {
       icon: "🔐",
       title: "Create an Account",
       description:
-        "Register or log in to your E-Learning account to start learning.",
+        "Register or log in to your Classora account to start learning.",
     },
     {
       number: "02",

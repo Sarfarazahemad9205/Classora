@@ -11,7 +11,7 @@ function Footer() {
           {/* Brand */}
           <Col md={5} className="mb-4 mb-md-0">
             <h3 className="footer-brand">
-              E-Learning
+             Classora
             </h3>
 
             <p className="footer-description">
@@ -87,7 +87,7 @@ function Footer() {
         <div className="footer-bottom">
 
           <p>
-            © 2026 E-Learning. All rights reserved.
+            © 2026 Classora. All rights reserved.
           </p>
 
           <p>

@@ -77,7 +77,7 @@ const navigate = useNavigate();
         <div className="register-info">
 
           <div className="info-badge">
-            📚 Class 10 E-Learning
+            📚 Class 10 Classora
           </div>
 
           <h1>

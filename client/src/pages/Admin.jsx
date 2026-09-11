@@ -444,7 +444,7 @@ function Admin() {
           </span>
 
           <h1 className="display-5 fw-bold mb-3">
-            Manage E-Learning Content
+            Manage Classora Content
           </h1>
 
           <p

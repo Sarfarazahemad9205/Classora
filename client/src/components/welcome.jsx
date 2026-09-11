@@ -19,7 +19,7 @@ function Welcome() {
         <h1 className="mt-5 text-4xl font-extrabold leading-tight text-gray-900 md:text-5xl">
           Welcome to{" "}
           <span className="text-blue-600">
-            E-Learning
+            Classora
           </span>
         </h1>
 

@@ -13,7 +13,7 @@ function About() {
 
             <div className="col-lg-7">
               <span className="badge bg-light text-primary px-3 py-2 mb-3">
-                ABOUT E-LEARNING
+                ABOUT Classora
               </span>
 
               <h1 className="display-4 fw-bold mb-4">
@@ -23,7 +23,7 @@ function About() {
               </h1>
 
               <p className="lead mb-4">
-                E-Learning is a student-focused educational platform designed
+                Classora is a student-focused educational platform designed
                 to make Class 10 learning simple, organized, and accessible.
               </p>
 
@@ -69,7 +69,7 @@ function About() {
               </h2>
 
               <p className="text-secondary fs-5">
-                E-Learning is a simple online learning platform created
+                Classora is a simple online learning platform created
                 especially for Class 10 students.
               </p>
 
@@ -268,7 +268,7 @@ function About() {
               </span>
 
               <h2 className="display-6 fw-bold mt-2 mb-4">
-                Why We Created E-Learning
+                Why We Created Classora
               </h2>
 
               <p className="fs-5 text-secondary">
@@ -278,7 +278,7 @@ function About() {
 
               <p className="text-secondary">
                 Students often have to move between different resources
-                while preparing for their examinations. E-Learning aims
+                while preparing for their examinations. Classora aims
                 to provide a structured environment where students can
                 find their subjects, chapters, and learning materials
                 through a simple navigation system.
