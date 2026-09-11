@@ -1,0 +1,15 @@
+import mongoose from "mongoose";
+
+const statsSchema = new mongoose.Schema(
+  {
+    visits: {
+      type: Number,
+      default: 0,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export const Stats = mongoose.model("Stats", statsSchema);

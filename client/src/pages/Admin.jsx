@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AppNavbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SubjectManagement from "../components/SubjectManagement";
 import { useAuth } from "../context/AuthContext";
 
 function Admin() {
@@ -9,6 +10,9 @@ function Admin() {
   // ================= SUBJECTS & CHAPTERS =================
   const [subjects, setSubjects] = useState([]);
   const [chapters, setChapters] = useState([]);
+
+  // ================= WEBSITE VISITS =================
+  const [visits, setVisits] = useState(0);
 
   // ================= SELECTED SUBJECT & CHAPTER =================
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -95,6 +99,38 @@ function Admin() {
   }, [token]);
 
   // =========================================================
+  // FETCH WEBSITE VISITS
+  // =========================================================
+
+  useEffect(() => {
+    const fetchVisits = async () => {
+      try {
+        const response = await fetch("/api/stats/visits", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || "Failed to fetch website visits"
+          );
+        }
+
+        setVisits(data.visits);
+      } catch (err) {
+        console.error("Fetch visits error:", err);
+      }
+    };
+
+    if (token && user?.role === "admin") {
+      fetchVisits();
+    }
+  }, [token, user]);
+
+  // =========================================================
   // FILTER CHAPTERS BY SELECTED SUBJECT
   // =========================================================
 
@@ -123,19 +159,16 @@ function Admin() {
     setChapterMessage("");
     setChapterError("");
 
-    // Validate subject
     if (!selectedSubject) {
       setChapterError("Please select a subject.");
       return;
     }
 
-    // Validate chapter name
     if (!chapterName.trim()) {
       setChapterError("Please enter chapter name.");
       return;
     }
 
-    // Validate chapter description
     if (!chapterDescription.trim()) {
       setChapterError("Please enter chapter description.");
       return;
@@ -168,16 +201,13 @@ function Admin() {
         );
       }
 
-      // Success
       setChapterMessage(
         data.message || "Chapter created successfully."
       );
 
-      // Clear chapter form
       setChapterName("");
       setChapterDescription("");
 
-      // Refresh chapter list
       const chaptersResponse = await fetch(
         "/api/chapters",
         {
@@ -199,57 +229,61 @@ function Admin() {
       setChapterLoading(false);
     }
   };
-const handleDeleteChapter = async (chapterId) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this chapter?"
-  );
 
-  if (!confirmDelete) {
-    return;
-  }
+  // =========================================================
+  // DELETE CHAPTER
+  // =========================================================
 
-  setChapterMessage("");
-  setChapterError("");
-
-  try {
-    const response = await fetch(
-      `/api/chapters/${chapterId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+  const handleDeleteChapter = async (chapterId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this chapter?"
     );
 
-    const data = await response.json();
+    if (!confirmDelete) {
+      return;
+    }
 
-    if (!response.ok) {
-      throw new Error(
-        data.message || "Failed to delete chapter"
+    setChapterMessage("");
+    setChapterError("");
+
+    try {
+      const response = await fetch(
+        `/api/chapters/${chapterId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to delete chapter"
+        );
+      }
+
+      setChapterMessage(
+        data.message || "Chapter deleted successfully."
+      );
+
+      setChapters((prevChapters) =>
+        prevChapters.filter(
+          (chapter) => chapter._id !== chapterId
+        )
+      );
+
+      if (selectedChapter === chapterId) {
+        setSelectedChapter("");
+      }
+    } catch (err) {
+      console.error("Delete chapter error:", err);
+      setChapterError(err.message);
     }
+  };
 
-    setChapterMessage(
-      data.message || "Chapter deleted successfully."
-    );
-
-    // Remove deleted chapter from frontend immediately
-    setChapters((prevChapters) =>
-      prevChapters.filter(
-        (chapter) => chapter._id !== chapterId
-      )
-    );
-
-    // Clear selected chapter if it was deleted
-    if (selectedChapter === chapterId) {
-      setSelectedChapter("");
-    }
-  } catch (err) {
-    console.error("Delete chapter error:", err);
-    setChapterError(err.message);
-  }
-};
   // =========================================================
   // MATERIAL TYPE CHANGE
   // =========================================================
@@ -257,12 +291,10 @@ const handleDeleteChapter = async (chapterId) => {
   const handleTypeChange = (e) => {
     setType(e.target.value);
 
-    // Clear fields belonging to previous type
     setFile(null);
     setVideoUrl("");
     setContent("");
 
-    // Clear file input
     const fileInput = document.getElementById("materialFile");
 
     if (fileInput) {
@@ -280,37 +312,31 @@ const handleDeleteChapter = async (chapterId) => {
     setMessage("");
     setError("");
 
-    // Check chapter
     if (!selectedChapter) {
       setError("Please select a chapter.");
       return;
     }
 
-    // Check title
     if (!title.trim()) {
       setError("Please enter a material title.");
       return;
     }
 
-    // Check description
     if (!description.trim()) {
       setError("Please enter a material description.");
       return;
     }
 
-    // Check PDF
     if (type === "pdf" && !file) {
       setError("Please select a PDF file.");
       return;
     }
 
-    // Check video
     if (type === "video" && !videoUrl.trim()) {
       setError("Please enter a YouTube video URL.");
       return;
     }
 
-    // Check notes
     if (type === "notes" && !content.trim()) {
       setError("Please enter note content.");
       return;
@@ -326,17 +352,14 @@ const handleDeleteChapter = async (chapterId) => {
       formData.append("description", description.trim());
       formData.append("chapter", selectedChapter);
 
-      // PDF
       if (type === "pdf") {
         formData.append("file", file);
       }
 
-      // Video
       if (type === "video") {
         formData.append("videoUrl", videoUrl.trim());
       }
 
-      // Notes
       if (type === "notes") {
         formData.append("content", content.trim());
       }
@@ -360,10 +383,8 @@ const handleDeleteChapter = async (chapterId) => {
         );
       }
 
-      // Success message
       setMessage(data.message);
 
-      // Clear material form
       setTitle("");
       setDescription("");
       setSelectedChapter("");
@@ -372,7 +393,6 @@ const handleDeleteChapter = async (chapterId) => {
       setContent("");
       setFile(null);
 
-      // Reset file input
       const fileInput = document.getElementById("materialFile");
 
       if (fileInput) {
@@ -414,9 +434,7 @@ const handleDeleteChapter = async (chapterId) => {
     <>
       <AppNavbar />
 
-      {/* =====================================================
-          HERO
-      ====================================================== */}
+      {/* HERO */}
 
       <section className="bg-primary text-white py-5">
         <div className="container py-5 text-center">
@@ -440,21 +458,49 @@ const handleDeleteChapter = async (chapterId) => {
         </div>
       </section>
 
-      {/* =====================================================
-          ADMIN CONTENT
-      ====================================================== */}
+      {/* ADMIN CONTENT */}
 
       <section className="py-5">
 
         <div className="container">
 
+          {/* WEBSITE VISITS */}
+
+          <div className="card border-0 shadow-sm rounded-4 mb-5">
+
+            <div className="card-body p-4 text-center">
+
+              <span className="text-primary fw-bold">
+                WEBSITE STATISTICS
+              </span>
+
+              <h2 className="fw-bold mt-2 display-6">
+                {visits}
+              </h2>
+
+              <p className="text-secondary mb-0">
+                Total Website Visits
+              </p>
+
+            </div>
+
+          </div>
+
+          {/* SUBJECT MANAGEMENT */}
+
+          <SubjectManagement
+            token={token}
+            subjects={subjects}
+            setSubjects={setSubjects}
+          />
+
+          {/* CHAPTER + MATERIAL */}
+
           <div className="row justify-content-center">
 
             <div className="col-lg-8">
 
-              {/* =================================================
-                  CREATE CHAPTER
-              ================================================== */}
+              {/* CREATE CHAPTER */}
 
               <div className="card border-0 shadow-sm rounded-4 mb-5">
 
@@ -476,15 +522,11 @@ const handleDeleteChapter = async (chapterId) => {
 
                   </div>
 
-                  {/* Chapter Success */}
-
                   {chapterMessage && (
                     <div className="alert alert-success">
                       {chapterMessage}
                     </div>
                   )}
-
-                  {/* Chapter Error */}
 
                   {chapterError && (
                     <div className="alert alert-danger">
@@ -571,8 +613,6 @@ const handleDeleteChapter = async (chapterId) => {
 
                     </div>
 
-                    {/* CREATE BUTTON */}
-
                     <button
                       type="submit"
                       className="btn btn-primary w-100 py-2"
@@ -580,78 +620,82 @@ const handleDeleteChapter = async (chapterId) => {
                         chapterLoading || loadingData
                       }
                     >
-
                       {chapterLoading
                         ? "Creating Chapter..."
                         : "Create Chapter"}
-
                     </button>
 
                   </form>
+
                   <hr className="my-5" />
 
-<div>
-  <h4 className="fw-bold mb-3">
-    Existing Chapters
-  </h4>
+                  {/* EXISTING CHAPTERS */}
 
-  {chapters.length === 0 ? (
-    <p className="text-secondary">
-      No chapters created yet.
-    </p>
-  ) : (
-    <div className="list-group">
+                  <div>
 
-      {chapters.map((chapter) => (
-        <div
-          key={chapter._id}
-          className="list-group-item d-flex justify-content-between align-items-center"
-        >
+                    <h4 className="fw-bold mb-3">
+                      Existing Chapters
+                    </h4>
 
-          <div>
-            <h6 className="fw-bold mb-1">
-              {chapter.name}
-            </h6>
+                    {chapters.length === 0 ? (
+                      <p className="text-secondary">
+                        No chapters created yet.
+                      </p>
+                    ) : (
+                      <div className="list-group">
 
-            <small className="text-secondary">
-              {chapter.subject?.name || "Unknown Subject"}
-            </small>
+                        {chapters.map((chapter) => (
+                          <div
+                            key={chapter._id}
+                            className="list-group-item d-flex justify-content-between align-items-center"
+                          >
 
-            <p className="mb-0 mt-1 text-secondary">
-              {chapter.description}
-            </p>
-          </div>
+                            <div>
 
-          <button
-            type="button"
-            className="btn btn-danger btn-sm ms-3"
-            onClick={() =>
-              handleDeleteChapter(chapter._id)
-            }
-          >
-            Delete
-          </button>
+                              <h6 className="fw-bold mb-1">
+                                {chapter.name}
+                              </h6>
 
-        </div>
-      ))}
+                              <small className="text-secondary">
+                                {chapter.subject?.name ||
+                                  "Unknown Subject"}
+                              </small>
 
-    </div>
-  )}
-</div>
+                              <p className="mb-0 mt-1 text-secondary">
+                                {chapter.description}
+                              </p>
+
+                            </div>
+
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm ms-3"
+                              onClick={() =>
+                                handleDeleteChapter(
+                                  chapter._id
+                                )
+                              }
+                            >
+                              Delete
+                            </button>
+
+                          </div>
+                        ))}
+
+                      </div>
+                    )}
+
+                  </div>
 
                 </div>
 
               </div>
 
-              {/* =================================================
-                  ADD MATERIAL
-              ================================================== */}
+              {/* ADD MATERIAL */}
 
               <div className="card border-0 shadow-sm rounded-4">
 
                 <div className="card-body p-4 p-md-5">
-
-                  {/* HEADER */}
 
                   <div className="text-center mb-4">
 
@@ -705,8 +749,6 @@ const handleDeleteChapter = async (chapterId) => {
                       {error}
                     </div>
                   )}
-
-                  {/* MATERIAL FORM */}
 
                   <form onSubmit={handleSubmit}>
 
@@ -946,11 +988,9 @@ const handleDeleteChapter = async (chapterId) => {
                         loading || loadingData
                       }
                     >
-
                       {loading
                         ? "Adding Material..."
                         : "Add Material"}
-
                     </button>
 
                   </form>

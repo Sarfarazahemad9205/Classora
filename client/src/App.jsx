@@ -1,16 +1,24 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
-import Home from './pages/Home'
-import About from './pages/About'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Verify from './pages/Verify'
-import Subjects from './pages/Subjects'
-import Chapters from './pages/Chapters'
-import Materials from './pages/Materials'
-import Admin from './pages/Admin'
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Verify from "./pages/Verify";
+import Subjects from "./pages/Subjects";
+import Chapters from "./pages/Chapters";
+import Materials from "./pages/Materials";
+import Admin from "./pages/Admin";
 
 function App() {
+  useEffect(() => {
+    fetch("/api/stats/visit", {
+      method: "POST",
+    }).catch((error) => {
+      console.error("Failed to record visit:", error);
+    });
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -38,7 +46,7 @@ function App() {
         />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,12 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
-import {connectDb} from "./database/db.js";
+import { connectDb } from "./database/db.js";
 import userRoutes from "./routes/user.js";
 import subjectRoutes from "./routes/subject.js";
 import chapterRoutes from "./routes/chapter.js";
 import materialRoutes from "./routes/material.js";
-import cors from "cors"
-
+import statsRoutes from "./routes/stats.js";
+import cors from "cors";
 
 
 dotenv.config();
@@ -31,6 +31,8 @@ app.use('/api',userRoutes);
 app.use("/api/subjects", subjectRoutes);
 app.use("/api", chapterRoutes);
 app.use("/api/material", materialRoutes);
+app.use("/api/stats", statsRoutes);
+
 app.listen(5000,()=>{
     console.log(`Server is running on ${port}`);
     connectDb();
