@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://classora-5onl.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
