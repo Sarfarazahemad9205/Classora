@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AppNavbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
+import Icon from "../components/Icon";
 
 function Subjects() {
   const { token } = useAuth();
@@ -57,18 +58,18 @@ function Subjects() {
   // Get icon based on subject name
   const getSubjectIcon = (name) => {
     if (name.toLowerCase() === "science") {
-      return "🔬";
+      return "flask";
     }
 
     if (name.toLowerCase() === "mathematics") {
-      return "📐";
+      return "ruler";
     }
 
     if (name.toLowerCase() === "english") {
-      return "📖";
+      return "language";
     }
 
-    return "📚";
+    return "book";
   };
 
   return (
@@ -182,7 +183,7 @@ function Subjects() {
                           }}
                         >
                           <span className="fs-1">
-                            {getSubjectIcon(subject.name)}
+                            <Icon name={getSubjectIcon(subject.name)} size={32} />
                           </span>
                         </div>
 

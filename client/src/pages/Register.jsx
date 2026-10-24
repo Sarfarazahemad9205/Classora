@@ -1,284 +1,99 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Icon from "../components/Icon";
+import AuthVisual from "../components/AuthVisual";
 import "./Register.css";
-
+import "./AuthPages.css";
 
 function Register() {
   const { register } = useAuth();
-const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({ ...current, [name]: value }));
+    setError("");
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  if (formData.password !== formData.confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
-
-  try {
-    const data = await register(
-      formData.name,
-      formData.email,
-      formData.password
-    );
-
-    console.log("Registration successful:", data);
-
-    sessionStorage.setItem(
-      "activationToken",
-      data.activationToken
-    );
-
-    sessionStorage.setItem(
-      "registrationEmail",
-      formData.email
-    );
-
-    alert(data.message);
-
-    navigate("/verify");
-
-  } catch (error) {
-    console.error("Registration error:", error);
-    alert(error.message);
-  }
-};
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+    if (formData.password !== formData.confirmPassword) {
+      setError("Those passwords don’t match yet. Check them and try again.");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const data = await register(formData.name, formData.email, formData.password);
+      sessionStorage.setItem("activationToken", data.activationToken);
+      sessionStorage.setItem("registrationEmail", formData.email);
+      navigate("/verify");
+    } catch (submitError) {
+      setError(submitError.message || "We couldn’t create your account. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div className="register-page">
-
-      {/* Decorative background elements */}
-      <div className="register-shape register-shape-one"></div>
-      <div className="register-shape register-shape-two"></div>
-
-      <div className="register-container">
-
-        {/* Left Section */}
-        <div className="register-info">
-
-          <div className="info-badge">
-            📚 Class 10 Classora
+    <main className="register-page auth-page">
+      <div className="register-shape register-shape-one" aria-hidden="true" />
+      <div className="register-shape register-shape-two" aria-hidden="true" />
+      <section className="register-info auth-panel">
+        <Link to="/" className="auth-logo register-logo"><span className="auth-logo-mark"><Icon name="openBook" size={18} /></span>Classora</Link>
+        <div className="register-info-content auth-intro">
+          <p className="auth-kicker">A GOOD PLACE TO BEGIN</p>
+          <h1>Make room<br />for <em>what’s next.</em></h1>
+          <p>Create your free learning account and keep your Class 10 subjects, chapters, and resources together.</p>
+          <div className="learning-points auth-benefits">
+            <div className="learning-point"><span className="point-icon"><Icon name="openBook" size={18} /></span><div><h3>Study with clarity</h3><p>Find resources organized around your subjects.</p></div></div>
+            <div className="learning-point"><span className="point-icon"><Icon name="target" size={18} /></span><div><h3>Go at your pace</h3><p>Return to topics whenever you need a refresher.</p></div></div>
+            <div className="learning-point"><span className="point-icon"><Icon name="sparkle" size={18} /></span><div><h3>Build your confidence</h3><p>Make steady progress, one lesson at a time.</p></div></div>
           </div>
-
-          <h1>
-            Start Your
-            <span> Learning Journey</span>
-          </h1>
-
-          <p>
-            Create your account and get access to your
-            Class 10 learning materials, chapters and subjects
-            in one place.
-          </p>
-
-          <div className="learning-points">
-
-            <div className="learning-point">
-              <div className="point-icon">📖</div>
-              <div>
-                <h3>Study Smarter</h3>
-                <p>Access organized study materials easily.</p>
-              </div>
-            </div>
-
-            <div className="learning-point">
-              <div className="point-icon">🎯</div>
-              <div>
-                <h3>Stay Focused</h3>
-                <p>Learn at your own pace and stay on track.</p>
-              </div>
-            </div>
-
-            <div className="learning-point">
-              <div className="point-icon">🚀</div>
-              <div>
-                <h3>Achieve Your Goals</h3>
-                <p>Build strong concepts for your Class 10 exams.</p>
-              </div>
-            </div>
-
-          </div>
-
         </div>
+        <AuthVisual />
+        <span className="auth-panel-caption">CLASSORA · LEARN WITH PURPOSE</span>
+      </section>
 
-        {/* Registration Card */}
-        <div className="register-card">
-
-          <div className="register-header">
-            <div className="register-icon">
-              ✨
-            </div>
-
-            <h2>Create Account</h2>
-
-            <p>
-              Join us and start learning today
-            </p>
+      <section className="register-form-side auth-form-side">
+        <div className="register-card auth-card">
+          <div className="auth-mobile-brand"><Link to="/" className="auth-logo"><span className="auth-logo-mark"><Icon name="openBook" size={18} /></span>Classora</Link></div>
+          <div className="register-header auth-heading">
+            <p className="auth-kicker">GET STARTED</p>
+            <h2>Create your account</h2>
+            <p>It only takes a moment to set up your learning space.</p>
           </div>
-
-          <form onSubmit={handleSubmit}>
-
-            {/* Full Name */}
-            <div className="form-group">
-              <label htmlFor="name">
-                Full Name
-              </label>
-
-              <div className="input-wrapper">
-                <span className="input-icon">👤</span>
-
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  autoComplete="name"
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit} noValidate>
+            {error && <div className="auth-message auth-message--error" role="alert">{error}</div>}
+            <div className="form-group auth-field">
+              <label htmlFor="register-name">Full name</label>
+              <div className="input-wrapper"><span className="input-icon"><Icon name="cap" size={17} /></span><input type="text" id="register-name" name="name" placeholder="Your name" value={formData.name} onChange={handleChange} autoComplete="name" required /></div>
             </div>
-
-            {/* Email */}
-            <div className="form-group">
-              <label htmlFor="email">
-                Email Address
-              </label>
-
-              <div className="input-wrapper">
-                <span className="input-icon">✉️</span>
-
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Enter your email address"
-                  value={formData.email}
-                  onChange={handleChange}
-                  autoComplete="email"
-                  required
-                />
-              </div>
+            <div className="form-group auth-field">
+              <label htmlFor="register-email">Email address</label>
+              <div className="input-wrapper"><span className="input-icon"><Icon name="arrow" size={17} /></span><input type="email" id="register-email" name="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} autoComplete="email" required /></div>
             </div>
-
-            {/* Password */}
-            <div className="form-group">
-              <label htmlFor="password">
-                Password
-              </label>
-
-              <div className="input-wrapper">
-                <span className="input-icon">🔒</span>
-
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  placeholder="Create a password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  autoComplete="new-password"
-                  required
-                />
-
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() =>
-                    setShowPassword((prev) => !prev)
-                  }
-                  aria-label={
-                    showPassword
-                      ? "Hide password"
-                      : "Show password"
-                  }
-                >
-                  {showPassword ? "🙈" : "👁️"}
-                </button>
-              </div>
+            <div className="form-group auth-field">
+              <label htmlFor="register-password">Password</label>
+              <div className="input-wrapper"><span className="input-icon"><Icon name="lock" size={17} /></span><input type={showPassword ? "text" : "password"} id="register-password" name="password" placeholder="Create a password" value={formData.password} onChange={handleChange} autoComplete="new-password" required /><button type="button" className="password-toggle auth-password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? "Hide" : "Show"}</button></div>
             </div>
-
-            {/* Confirm Password */}
-            <div className="form-group">
-              <label htmlFor="confirmPassword">
-                Confirm Password
-              </label>
-
-              <div className="input-wrapper">
-                <span className="input-icon">🔐</span>
-
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  autoComplete="new-password"
-                  required
-                />
-
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() =>
-                    setShowConfirmPassword((prev) => !prev)
-                  }
-                  aria-label={
-                    showConfirmPassword
-                      ? "Hide password"
-                      : "Show password"
-                  }
-                >
-                  {showConfirmPassword ? "🙈" : "👁️"}
-                </button>
-              </div>
+            <div className="form-group auth-field">
+              <label htmlFor="register-confirm-password">Confirm password</label>
+              <div className="input-wrapper"><span className="input-icon"><Icon name="lock" size={17} /></span><input type={showConfirmPassword ? "text" : "password"} id="register-confirm-password" name="confirmPassword" placeholder="Enter your password again" value={formData.confirmPassword} onChange={handleChange} autoComplete="new-password" required /><button type="button" className="password-toggle auth-password-toggle" onClick={() => setShowConfirmPassword((visible) => !visible)} aria-label={showConfirmPassword ? "Hide password" : "Show password"}>{showConfirmPassword ? "Hide" : "Show"}</button></div>
             </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              className="register-submit"
-            >
-              <span>Create My Account</span>
-              <span className="button-arrow">→</span>
-            </button>
-
+            <button type="submit" className="register-submit auth-submit" disabled={isSubmitting}><span>{isSubmitting ? "Creating your account…" : "Create account"}</span><Icon name="arrow" size={17} /></button>
           </form>
-
-          {/* Login */}
-          <div className="login-link">
-            <span>Already have an account?</span>{" "}
-            <Link to="/login">
-              Login
-            </Link>
-          </div>
-
+          <div className="login-link auth-switch"><span>Already have an account?</span> <Link to="/login">Sign in <Icon name="arrow" size={14} /></Link></div>
+          <Link to="/" className="back-home">← Back to home</Link>
         </div>
-
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 

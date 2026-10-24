@@ -2,96 +2,42 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { useNavigate } from "react-router-dom";
+import Icon from "./Icon";
+
+const subjects = [
+  { name: "Science", icon: "flask", description: "Explore physics, chemistry, and biology with clear chapter guides and useful study materials." },
+  { name: "Mathematics", icon: "ruler", description: "Build confidence in algebra, geometry, trigonometry, and other key concepts." },
+  { name: "English", icon: "language", description: "Strengthen grammar, literature, vocabulary, and writing skills at your own pace." },
+];
 
 function Cards() {
-  const subjects = [
-    {
-      name: "Science",
-      icon: "🔬",
-      description:
-        "Learn Physics, Chemistry and Biology with easy-to-understand study materials.",
-    },
-    {
-      name: "Mathematics",
-      icon: "📐",
-      description:
-        "Master Algebra, Geometry, Trigonometry and other important concepts.",
-    },
-    {
-      name: "English",
-      icon: "📖",
-      description:
-        "Improve your grammar, literature, vocabulary and writing skills.",
-    },
-  ];
-
+  const navigate = useNavigate();
   return (
-    <div className="container my-5">
-
-      {/* Section heading */}
-      <div className="text-center mb-4">
-        <h2 className="fw-bold text-primary">
-          Our Subjects
-        </h2>
-
-        <p className="text-muted">
-          Explore Class 10 subjects and start your learning journey.
-        </p>
+    <section className="subjects-section" id="subjects">
+      <div className="container my-5">
+        <div className="subjects-heading text-center mb-4">
+          <p className="section-kicker">YOUR LEARNING, ORGANIZED</p>
+          <h2 className="fw-bold">Choose a subject to begin</h2>
+          <p className="text-muted">A clear path from the first concept to the final chapter.</p>
+        </div>
+        <Row className="g-4 justify-content-center">
+          {subjects.map((subject, index) => (
+            <Col key={subject.name} md={4} sm={6} xs={12}>
+              <Card className={`subject-card subject-card--${index + 1} h-100`}>
+                <Card.Body className="p-4 p-lg-5">
+                  <div className="subject-icon"><Icon name={subject.icon} size={29} /></div>
+                  <span className="subject-index">0{index + 1} / SUBJECT</span>
+                  <Card.Title className="fw-bold">{subject.name}</Card.Title>
+                  <Card.Text>{subject.description}</Card.Text>
+                  <Button variant="primary" className="rounded-pill px-4 mt-2" onClick={() => navigate("/subjects")}>Explore subject <Icon name="arrow" size={16} /></Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
       </div>
-
-      {/* Cards */}
-      <Row className="g-4 justify-content-center">
-
-        {subjects.map((subject) => (
-          <Col key={subject.name} md={4} sm={6} xs={12}>
-
-            <Card
-              className="h-100 border-0 shadow-sm text-center"
-              style={{
-                borderRadius: "20px",
-                overflow: "hidden",
-              }}
-            >
-
-              <Card.Body className="p-4">
-
-                {/* Icon */}
-                <div
-                  style={{
-                    fontSize: "55px",
-                    marginBottom: "15px",
-                  }}
-                >
-                  {subject.icon}
-                </div>
-
-                {/* Subject name */}
-                <Card.Title className="fw-bold fs-3 text-primary">
-                  {subject.name}
-                </Card.Title>
-
-                {/* Description */}
-                <Card.Text className="text-muted mt-3">
-                  {subject.description}
-                </Card.Text>
-
-                {/* Button */}
-                <Button
-                  variant="primary"
-                  className="rounded-pill px-4 mt-2"
-                >
-                  Explore →
-                </Button>
-
-              </Card.Body>
-
-            </Card>
-
-          </Col>
-        ))}
-
-      </Row>
-    </div>
+    </section>
   );
 }
 

@@ -1,100 +1,34 @@
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import { Link } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { useState } from "react";
+import Icon from "./Icon";
 import { useAuth } from "../context/AuthContext";
 
 function AppNavbar() {
   const { user } = useAuth();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <Navbar expand="lg" className="custom-navbar">
-      <Container>
-
-        {/* Logo */}
-        <Navbar.Brand
-          as={Link}
-          to="/"
-          className="navbar-brand-custom"
-        >
-         Classora
-        </Navbar.Brand>
-
-        <Navbar.Toggle aria-controls="main-navbar" />
-
-        <Navbar.Collapse id="main-navbar">
-
-          {/* Main Navigation */}
-          <Nav className="mx-auto navbar-links">
-
-            <Nav.Link
-              as={Link}
-              to="/"
-              className="navbar-link"
-            >
-              Home
-            </Nav.Link>
-
-            <Nav.Link
-              as={Link}
-              to="/subjects"
-              className="navbar-link"
-            >
-              Subjects
-            </Nav.Link>
-
-            <Nav.Link
-              as={Link}
-              to="/about"
-              className="navbar-link"
-            >
-              About
-            </Nav.Link>
-
-            {/* Admin - Only visible to Admin */}
-            {user?.role === "admin" && (
-              <Nav.Link
-                as={Link}
-                to="/admin"
-                className="navbar-link"
-              >
-                Admin
-              </Nav.Link>
-            )}
-
-          </Nav>
-
-          {/* Authentication */}
-          <Nav className="align-items-center">
-
-            {/* Login */}
-            <Nav.Link
-              as={Link}
-              to="/login"
-              className="px-4 py-2 me-2 rounded-3 text-white fw-semibold"
-              style={{
-                backgroundColor: "#6f42c1",
-              }}
-            >
-              Login
-            </Nav.Link>
-
-            {/* Register */}
-            <Nav.Link
-              as={Link}
-              to="/register"
-              className="px-3 py-2 text-white fw-semibold"
-            >
-              Register
-            </Nav.Link>
-
-          </Nav>
-
-        </Navbar.Collapse>
-
-      </Container>
-    </Navbar>
+    <header className={`site-header${location.pathname === "/" ? " site-header--hero" : " site-header--solid"}`}>
+      <nav className="site-nav" aria-label="Main navigation">
+        <Link to="/" className="site-brand" onClick={closeMenu}><span className="brand-mark"><Icon name="book" size={19} /></span><span>Classora<small>LEARN WITH PURPOSE</small></span></Link>
+        <button type="button" className="nav-menu-toggle" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <Icon name="close" /> : <Icon name="menu" />}</button>
+        <div className={`site-nav-content${menuOpen ? " is-open" : ""}`}>
+          <div className="site-nav-links">
+            <NavLink to="/" end onClick={closeMenu}>Home</NavLink>
+            <NavLink to="/subjects" onClick={closeMenu}>Subjects</NavLink>
+            <NavLink to="/about" onClick={closeMenu}>About</NavLink>
+            {user?.role === "admin" && <NavLink to="/admin" onClick={closeMenu}>Admin</NavLink>}
+          </div>
+          <div className="site-nav-actions">{user ? <Link className="nav-cta" to="/subjects" onClick={closeMenu}>Start learning <span>↗</span></Link> : <><Link className="nav-login" to="/login" onClick={closeMenu}>Log in</Link><Link className="nav-cta" to="/register" onClick={closeMenu}>Get started <span>↗</span></Link></>}</div>
+        </div>
+      </nav>
+    </header>
   );
 }
 
 export default AppNavbar;
+
+
+
